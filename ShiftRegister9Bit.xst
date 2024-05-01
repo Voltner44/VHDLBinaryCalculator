@@ -1,5 +1,0 @@
-set -tmpdir "U:/Documents/ECE3561/ECE3561/xst/projnav.tmp"
-set -xsthdpdir "U:/Documents/ECE3561/ECE3561/xst"
-elaborate
--ifn ShiftRegister9Bit.prj
--ifmt mixed
