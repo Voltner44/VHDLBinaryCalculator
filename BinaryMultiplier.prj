@@ -1,0 +1,6 @@
+vhdl work "SystemController.vhd"
+vhdl work "ShiftRegister9Bit.vhd"
+vhdl work "ShiftRegister4Bit.vhd"
+vhdl work "ParallelAdder4Bit.vhd"
+vhdl work "Counter.vhd"
+vhdl work "BinaryMultiplier.vhd"

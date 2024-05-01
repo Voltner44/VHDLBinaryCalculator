@@ -1,0 +1,2 @@
+vhdl isim_temp "SystemController.vhd"
+vhdl isim_temp "SystemControllerTest.vhd"

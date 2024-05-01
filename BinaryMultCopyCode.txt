@@ -1,0 +1,287 @@
+----------------------------------------------------------------------------------
+-- Company: 		 Ohio State University
+-- Engineer: 		 Ali Ibrahim and Mohammed Jama-Handulleh
+-- 
+-- Create Date:    16:23:14 11/23/2023 
+-- Design Name: 
+-- Module Name:    BinaryMultiplier - Structure 
+-- Project Name:   Binary Multiplier Circuit
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity BinaryMultiplier is
+    Port ( START : in  STD_LOGIC;
+			  INIT: in  STD_LOGIC;
+           N1 : in  STD_LOGIC;
+           N2 : in  STD_LOGIC;
+           N3 : in  STD_LOGIC;
+           N4 : in  STD_LOGIC;
+           M1 : in  STD_LOGIC;
+           M2 : in  STD_LOGIC;
+           M3 : in  STD_LOGIC;
+           M4 : in  STD_LOGIC;
+           CLK : in  STD_LOGIC;
+           R8 : buffer  STD_LOGIC;
+           R7 : buffer  STD_LOGIC;
+           R6 : buffer  STD_LOGIC;
+           R5 : buffer  STD_LOGIC;
+           R4 : buffer  STD_LOGIC;
+           R3 : buffer  STD_LOGIC;
+           R2 : buffer  STD_LOGIC;
+           R1 : buffer  STD_LOGIC;
+           DONE : out  STD_LOGIC);
+end BinaryMultiplier;
+
+architecture Structure of BinaryMultiplier is
+	-- declare necessary components
+	component ShiftRegister4Bit 
+		port( A : in  STD_LOGIC;
+           B : in  STD_LOGIC;
+           C : in  STD_LOGIC;
+           D : in  STD_LOGIC;
+           SLI : in  STD_LOGIC;
+           SRI : in  STD_LOGIC;
+           S0 : in  STD_LOGIC;
+           S1 : in  STD_LOGIC;
+           CLR_L : in  STD_LOGIC;
+           CLK : in  STD_LOGIC;
+           QA : buffer  STD_LOGIC;
+           QB : buffer  STD_LOGIC;
+           QC : buffer  STD_LOGIC;
+           QD : buffer  STD_LOGIC);
+	end component;
+	component Counter
+		port( ENT : in  STD_LOGIC;
+           ENP : in  STD_LOGIC;
+           LOAD_L : in  STD_LOGIC;
+           D : in  STD_LOGIC;
+           C : in  STD_LOGIC;
+           B : in  STD_LOGIC;
+           A : in  STD_LOGIC;
+           CLK : in  STD_LOGIC;
+           CLR_L : in  STD_LOGIC;
+           RCO : out  STD_LOGIC;
+           QD : buffer  STD_LOGIC;
+           QC : buffer  STD_LOGIC;
+           QB : buffer  STD_LOGIC;
+           QA : buffer  STD_LOGIC);
+	end component;
+	component ParallelAdder4Bit
+		port( X4 : in  STD_LOGIC;
+           X3 : in  STD_LOGIC;
+           X2 : in  STD_LOGIC;
+           X1 : in  STD_LOGIC;
+           Y4 : in  STD_LOGIC;
+           Y3 : in  STD_LOGIC;
+           Y2 : in  STD_LOGIC;
+           Y1 : in  STD_LOGIC;
+           CI : in  STD_LOGIC;
+           S4 : out  STD_LOGIC;
+           S3 : out  STD_LOGIC;
+           S2 : out  STD_LOGIC;
+           S1 : out  STD_LOGIC;
+           CO : out  STD_LOGIC);
+	end component;
+	component ShiftRegister9Bit
+		port( A : in  STD_LOGIC;
+           B : in  STD_LOGIC;
+           C : in  STD_LOGIC;
+           D : in  STD_LOGIC;
+			  E : in  STD_LOGIC;
+			  F : in  STD_LOGIC;
+			  G : in  STD_LOGIC;
+			  H : in  STD_LOGIC;
+			  J : in  STD_LOGIC;
+           SLI : in  STD_LOGIC;
+           SRI : in  STD_LOGIC;
+           S0 : in  STD_LOGIC;
+           S1 : in  STD_LOGIC;
+           CLR_L : in  STD_LOGIC;
+           CLK : in  STD_LOGIC;
+           QA : buffer  STD_LOGIC;
+           QB : buffer  STD_LOGIC;
+           QC : buffer  STD_LOGIC;
+           QD : buffer  STD_LOGIC;
+			  QE : buffer  STD_LOGIC;
+			  QF : buffer  STD_LOGIC;
+			  QG : buffer  STD_LOGIC;
+			  QH : buffer  STD_LOGIC;
+			  QJ : buffer  STD_LOGIC);
+	end component;
+	component SystemController
+	port( CLK : in  STD_LOGIC;
+		  START : in  STD_LOGIC;
+		  LSB : in  STD_LOGIC;
+		  C4 : in  STD_LOGIC;
+		  INIT: in STD_LOGIC;
+		  S10 : out  STD_LOGIC;
+		  S11 : out  STD_LOGIC;
+		  S20 : out  STD_LOGIC;
+		  S21 : out  STD_LOGIC;
+		  S30 : out  STD_LOGIC;
+		  S31 : out  STD_LOGIC;
+		  CLR_RES_L : out  STD_LOGIC;
+		  CLR_CNTR_L : out  STD_LOGIC;
+		  EN_CNTR : out  STD_LOGIC;
+		  DONE : out  STD_LOGIC);
+	end component;
+	
+	-- define GND and VCC
+	signal GROUND: STD_LOGIC := '0';
+	signal V_CC: STD_LOGIC := '1';
+	
+	-- define intermediate non-ground-or-VCC signals to begin instantiating components
+	
+	-- System Controller
+	signal LSB, C4: STD_LOGIC; -- inputs
+	signal S10, S11, S20, S21, S30, S31, CLR_RES_L, CLR_CNTR_L, EN_CNTR: STD_LOGIC; -- outputs
+	
+	-- Multiplier Shift Register 
+	signal A_M, B_M, C_M, D_M, S0_M, S1_M; -- inputs
+	signal QA_M, QB_M, QC_M, QD_M: STD_LOGIC; -- outputs
+	
+	-- Multiplicand Shift Register
+	signal A_N, B_N, C_N, D_N, S0_N, S1_N; -- inputs
+	signal QA_N, QB_N, QC_N, QD_N: STD_LOGIC; -- outputs
+	
+	-- Counter
+	signal ENT, CLR_L_C: STD_LOGIC; -- inputs
+	signal QC_C: STD_LOGIC; -- only used output
+	
+	-- Parallel Adder
+	signal X4, X3, X2, X1, Y4, Y3, Y2, Y1: STD_LOGIC; -- inputs
+	signal S4, S3, S2, S1, CO: STD_LOGIC; -- outputs
+	
+	-- Result Shift Register
+	-- no new signals needed
+	
+begin
+	-- instantiate components
+	Controller: SystemController port map( -- system controller
+			  CLK => CLK,
+			  START => START,
+			  LSB => LSB,
+			  C4 => C4,
+			  INIT => INIT,
+			  S10 => S10,
+			  S11 => S11,
+			  S20 => S20,
+			  S21 => S21,
+			  S30 => S30,
+			  S31 => S31,
+			  CLR_RES_L => CLR_RES_L,
+			  CLR_CNTR_L => CLR_CNTR_L,
+			  EN_CNTR => EN_CNTR,
+			  DONE => DONE);
+		  
+	M: ShiftRegister4Bit port map( -- multiplier shift register
+			  A => A_M,
+           B => B_M,
+           C => C_M,
+           D => D_M,
+           SLI => GROUND,
+           SRI => GROUND,
+           S0 => S1_M,
+           S1 => S2_M,
+           CLR_L => V_CC,
+           CLK => CLK,
+           QA => QA_M,
+           QB => QB_M,
+           QC => QC_M,
+           QD => QD_M);
+			  
+	N: ShiftRegister4Bit port map( -- multiplicand shift register
+		  	  A => A_N,
+			  B => B_N,
+			  C => C_N,
+			  D => D_N,
+			  SLI => GROUND,
+			  SRI => GROUND,
+			  S0 => S0_N,
+			  S1 => S1_N,
+			  CLR_L => V_CC,
+			  CLK => CLK,
+			  QA => QA_N,
+			  QB => QB_N,
+			  QC => QC_N,
+			  QD => QD_N);
+			  
+	C: Counter port map(
+			  ENT => ENT_C, 
+           ENP => V_CC, 
+           LOAD_L => V_CC,
+           D => V_CC,
+           C => V_CC,
+           B => V_CC,
+           A => V_CC,
+           CLK => CLK,
+           CLR_L => CLR_L_C, -- connect control input to System Controller output
+           -- RCO unused
+           -- QD unused
+           QC => QC_C -- connect counter output to System Controller input           -- QB unused
+           -- QA unused
+			  );
+			  
+	PA: ParallelAdder4Bit port map(
+			  X4 => QA_M,
+           X3 => QB_M,
+           X2 => QC_M,
+           X1 => QD_M, 
+           Y4 => R8,
+           Y3 => R7,
+           Y2 => R6,
+           Y1 => R5,
+           CI => GROUND,
+           S4 => S4,
+           S3 => S3,
+           S2 => S2,
+           S1 => S1,
+           CO => CO);
+	
+	R: ShiftRegister9Bit port map(
+			  A => CO,
+           B => S4,
+           C => S3,
+           D => S2, 
+			  E => S1,
+			  F => R4,
+			  G => R3,
+			  H => R2,
+			  J => R1,
+           SLI => GROUND,
+           SRI => GROUND,
+           S0 => S30, -- connect control input to System Controller output
+           S1 => S31, -- connect control input to System Controller output
+           CLR_L => CLR_RES_L, -- connect control input to System Controller output
+           CLK => CLK,
+           -- QA unused 
+           QB => R8,
+           QC => R7,
+           QD => R6,
+			  QE => R5,
+			  QF => R4,
+			  QG => R3,
+			  QH => R2,
+			  QJ => R1);
+			  
+end Structure;
